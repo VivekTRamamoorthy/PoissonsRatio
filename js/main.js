@@ -8,13 +8,17 @@ scene.background = new THREE.Color(0x87CEEB); // background color
 
 // Camera
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.set(5,5,5)
+camera.position.set(10,10,10)
 
 // Renderer
 const renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
+
+// Axes
+const axesHelper = new THREE.AxesHelper( 5 );
+scene.add( axesHelper );
 
 // Light
 const light = new THREE.DirectionalLight( 0xffffff, 1 );
@@ -25,25 +29,46 @@ scene.add( light );
 const ambientLight = new THREE.AmbientLight( 0xffffff, .7 );
 scene.add( ambientLight );
 
-
+// constants
+let blockWidth = 1;
+let platformThickness = 1;
+let blockSpacing = 2;
+let platformWidth = blockWidth+2*blockSpacing;
+let blockHeight = 5;
+let noOfBlocks = 5;
+let platformLength = blockWidth*noOfBlocks+blockSpacing*(noOfBlocks+1)
 
 // Base platform
-const geometry = new THREE.BoxGeometry(10,1,10);
-console.log(geometry);
-const material = new THREE.MeshPhongMaterial( { color: 0x009900 } );
-const platform = new THREE.Mesh( geometry, material );
+const geometry = new THREE.BoxGeometry(platformWidth,platformThickness,platformLength);
+const materialGrass = new THREE.MeshPhongMaterial( { color: 0x009900 } );
+const platform = new THREE.Mesh( geometry, materialGrass );
 scene.add( platform );
-platform.position.x = -5;
-platform.position.y = -5;
-console.log(platform);
+platform.position.x = 0;
+platform.position.y = -platformThickness/2;
+platform.position.z = 0;
+
+// block 1
+// Base platform
+const materialSteel = new THREE.MeshPhongMaterial( { color: 0x71797E } );
+let blocks = [];
+for (let blockNo = 0; blockNo < noOfBlocks; blockNo++) {
+    const geometryBlock1 = new THREE.BoxGeometry(blockWidth,blockHeight,blockWidth);
+    const block = new THREE.Mesh( geometryBlock1, materialSteel );
+    scene.add( block );
+    block.position.x = 0;
+    block.position.y = (blockHeight)/2;
+    block.position.z = (blockNo+1)*(blockSpacing+blockWidth)-platformLength/2;
+    blocks[blockNo]=block;
+    
+}
 
 
 
 // controls
 
 let controls = new OrbitControls( camera, renderer.domElement );
-controls.listenToKeyEvents( window ); // optional
-controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+// controls.listenToKeyEvents( window ); 
+controls.enableDamping = true; 
 controls.dampingFactor = 0.05;
 controls.screenSpacePanning = false;
 controls.minDistance = 1;
@@ -57,14 +82,11 @@ renderer.render( scene, camera ); // t
 const animate = function () {
     requestAnimationFrame( animate );
     
-    // cube.rotation.x += 0.01;
-    // cube.rotation.y += 0.01;
-    
-    
-    // required if controls.enableDamping or controls.autoRotate are set to true
+    // Update
     controls.update();
-    
-    renderer.render( scene, camera ); // this is like the update function
+
+    // Render
+    renderer.render( scene, camera ); 
 };
 
 animate();
