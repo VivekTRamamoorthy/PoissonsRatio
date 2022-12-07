@@ -1,6 +1,6 @@
-import * as THREE from 'three';
+import * as THREE from './three.module.js';
         
-import { OrbitControls } from 'three/addons/OrbitControls.js';
+import { OrbitControls } from './OrbitControls.js';
 
 // scene
 const scene = new THREE.Scene();
